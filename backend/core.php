@@ -98,9 +98,20 @@ function url($addr = '') {
   return (conf('basedir') ?: '') . '/?q=' . ltrim($addr, '/');
 }
 
-// Путь к статике (css/js).
+// Путь к статике (css/js) внутри backend.
 function asset($file) {
   return (conf('basedir') ?: '') . '/assets/' . ltrim($file, '/');
+}
+
+// Путь к медиа (картинки/видео фронтенда) из соседней папки public.
+// По умолчанию выводится из basedir: /WebProjectBackend/backend → /WebProjectBackend/public.
+function media($path) {
+  $base = conf('media_base');
+  if (!$base) {
+    $bd = conf('basedir');
+    $base = $bd ? rtrim(dirname($bd), '/') . '/public' : '/public';
+  }
+  return rtrim($base, '/') . '/' . ltrim($path, '/');
 }
 
 function redirect($to) {

@@ -207,12 +207,14 @@ function application_errors_response($errors, $data, $format, $action, $edit = f
 /** GET: пустая анкета (создание) или профиль с данными (правка, после auth). */
 function application_get($request, $id = null) {
   if ($id === null) {
-    return theme('application_form', array(
+    // Главная: весь сайт через фреймворк, анкета — секция "Обратная связь".
+    $form = theme('application_form', array(
       'action'    => url('application'),
       'data'      => array(),
       'errors'    => array(),
       'languages' => languages_all(),
     ));
+    return theme('home', array('form' => $form));
   }
 
   $app = application_load($id);
