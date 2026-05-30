@@ -1162,7 +1162,10 @@ button {
 .form__checkbox { display: inline-flex; align-items: center; gap: 4px; font-weight: 400; }
 .form__group label input[type="radio"],
 .form__checkbox input[type="checkbox"] { width: auto; margin-right: 4px; }
+<<<<<<< HEAD
 
 .form__error:empty { display: none !important; }
 
 .form__message a { color: inherit; text-decoration: underline; font-weight: 600; }
+=======
+>>>>>>> parent of 23fec56 (backend)
