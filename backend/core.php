@@ -78,15 +78,10 @@ function url($addr = '') {
   return (conf('basedir') ?: '') . '/?q=' . ltrim($addr, '/');
 }
 
-<<<<<<< HEAD
-=======
-// Путь к статике (css/js).
->>>>>>> parent of 23fec56 (backend)
 function asset($file) {
   return (conf('basedir') ?: '') . '/assets/' . ltrim($file, '/');
 }
 
-<<<<<<< HEAD
 function media($path) {
   $base = conf('media_base');
   if (!$base) {
@@ -96,8 +91,6 @@ function media($path) {
   return rtrim($base, '/') . '/' . ltrim($path, '/');
 }
 
-=======
->>>>>>> parent of 23fec56 (backend)
 function redirect($to) {
   return array('headers' => array('Location' => (conf('basedir') ?: '') . '/?q=' . ltrim($to, '/')));
 }

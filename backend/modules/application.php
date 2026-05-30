@@ -68,19 +68,12 @@ function contact_errors_response($errors, $data, $format, $action, $edit = false
 
 function application_get($request, $id = null) {
   if ($id === null) {
-<<<<<<< HEAD
     $form = theme('application_form', array(
       'action' => url('application'),
       'data'   => array(),
       'errors' => array(),
-=======
-    return theme('application_form', array(
-      'action'    => url('application'),
-      'data'      => array(),
-      'errors'    => array(),
-      'languages' => languages_all(),
->>>>>>> parent of 23fec56 (backend)
     ));
+    return theme('home', array('form' => $form));
   }
   $row = contact_load($id);
   if (!$row) {
