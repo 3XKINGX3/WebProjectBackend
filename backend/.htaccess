@@ -1,12 +1,8 @@
-# Для Apache (XAMPP/Laragon): единая точка входа.
-# Пробрасываем PHP_AUTH_* для Basic-аутентификации при работе через CGI/FPM.
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-# Существующие файлы (assets) отдаём напрямую.
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Всё остальное — на index.php.
 RewriteRule ^ index.php [L]

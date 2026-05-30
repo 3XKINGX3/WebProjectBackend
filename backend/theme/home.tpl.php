@@ -1,9 +1,4 @@
 <?php
-/**
- * theme/home.tpl.php — главная страница сайта Drupal-coder, отрисованная
- * фреймворком (перенос React-секций в серверные шаблоны, тот же CSS).
- * Секция "Обратная связь" — это анкета ($c['form'], рендерится отдельно).
- */
 $competencies = array(
   array('competency-1.svg', 'Разработка на Drupal', 'Создание сайтов любой сложности на CMS Drupal'),
   array('competency-2.svg', 'Миграция на Drupal', 'Перенос сайтов с других платформ на Drupal'),
@@ -72,7 +67,7 @@ $img = function ($f) { return media('project/project/img/' . $f); };
             </li>
             <li class="navbar__item"><a href="#portfolio" class="navbar__link">Портфолио</a></li>
             <li class="navbar__item"><a href="#team" class="navbar__link">Команда</a></li>
-            <li class="navbar__item"><a href="#contacts" class="navbar__link">Обратная связь</a></li>
+            <li class="navbar__item"><a href="#connect" class="navbar__link">Обратная связь</a></li>
           </ul>
         </div>
       </div>
@@ -174,6 +169,43 @@ $img = function ($f) { return media('project/project/img/' . $f); };
             <p><?= htmlspecialchars($m[3]) ?></p>
           </div>
         <?php endforeach; ?>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="connect">
+    <div class="container">
+      <h2 class="section__title">Связаться с нами</h2>
+      <div class="contact__form-wrapper">
+        <div class="form__group">
+          <div class="form__row">
+            <div class="form__col">
+              <label class="form__label">ИМЯ *</label>
+              <input type="text" class="form__input" placeholder="Иванов Иван Иванович">
+            </div>
+            <div class="form__col">
+              <label class="form__label">EMAIL *</label>
+              <input type="email" class="form__input" placeholder="your@email.com">
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__col">
+              <label class="form__label">ТЕЛЕФОН</label>
+              <input type="tel" class="form__input" placeholder="+7 (999) 123-45-67">
+            </div>
+            <div class="form__col">
+              <label class="form__label">КОМПАНИЯ</label>
+              <input type="text" class="form__input" placeholder="Название компании">
+            </div>
+          </div>
+          <div>
+            <label class="form__label">СООБЩЕНИЕ *</label>
+            <textarea class="form__input form__textarea" rows="5" placeholder="Расскажите о вашем проекте..."></textarea>
+          </div>
+          <div style="text-align:center;margin-top:1.5rem">
+            <button type="button" class="btn btn--primary">ОТПРАВИТЬ</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>

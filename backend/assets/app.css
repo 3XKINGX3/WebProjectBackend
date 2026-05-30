@@ -1105,7 +1105,7 @@ button {
         padding-left: 30px;
     }
 
-    /* Desktop hover для dropdown */
+    
     .navbar__item--dropdown:hover .navbar__dropdown {
         max-height: 500px;
         padding: 15px 0;
@@ -1158,11 +1158,11 @@ button {
     animation: fadeIn 0.6s ease forwards;
 }
 
-/* --- доп. стили для анкеты (радио/чекбоксы языков) --- */
 .form__checkboxes { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 4px; }
 .form__checkbox { display: inline-flex; align-items: center; gap: 4px; font-weight: 400; }
 .form__group label input[type="radio"],
 .form__checkbox input[type="checkbox"] { width: auto; margin-right: 4px; }
 
-/* пустые блоки ошибок не показываем (на сервере спан рендерится всегда) */
 .form__error:empty { display: none !important; }
+
+.form__message a { color: inherit; text-decoration: underline; font-weight: 600; }

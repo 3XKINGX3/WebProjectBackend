@@ -1,9 +1,3 @@
-<?php
-/**
- * theme/application_result.tpl.php — результат создания (фоллбек без JS).
- * Показывает логин, пароль и адрес профиля. Пароль виден один раз.
- */
-?>
 <section class="contact-form">
   <div class="container">
     <h2 class="section__title">Заявка принята</h2>

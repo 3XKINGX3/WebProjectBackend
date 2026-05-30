@@ -1,9 +1,4 @@
 <?php
-/**
- * settings.sample.php — ШАБЛОН конфигурации для репозитория (без пароля).
- * Скопируй в settings.php и впиши свой пароль БД:
- *   cp settings.sample.php settings.php
- */
 
 define('DISPLAY_ERRORS', 1);
 
@@ -17,7 +12,7 @@ $conf = array(
   'db_host'    => 'localhost',
   'db_name'    => 'u82373',
   'db_user'    => 'u82373',
-  'db_psw'     => '',   // ← впиши пароль здесь
+  'db_psw'     => '',
 );
 
 $urlconf = array(

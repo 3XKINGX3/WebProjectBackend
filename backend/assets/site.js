@@ -1,7 +1,3 @@
-/**
- * assets/site.js — поведение сайта (прогрессивное улучшение навигации).
- * Без JS ссылки-якоря всё равно работают, форма отправляется обычным POST.
- */
 (function () {
   'use strict';
 
@@ -15,7 +11,6 @@
     });
   }
 
-  // Выпадающие пункты меню (раскрытие по клику на мобильном).
   document.querySelectorAll('.navbar__item--dropdown > .navbar__link').forEach(function (link) {
     link.addEventListener('click', function (e) {
       if (window.innerWidth <= 768) {
@@ -25,7 +20,6 @@
     });
   });
 
-  // Плавная прокрутка по якорям + закрытие меню.
   document.querySelectorAll('a[href^="#"]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       var href = a.getAttribute('href');
@@ -40,7 +34,6 @@
     });
   });
 
-  // Подсветка активного пункта меню при прокрутке.
   var sections = document.querySelectorAll('section[id]');
   var links = document.querySelectorAll('.navbar__link');
   if ('IntersectionObserver' in window && sections.length) {

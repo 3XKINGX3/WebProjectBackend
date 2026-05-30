@@ -1,11 +1,3 @@
-/**
- * assets/form.js — прогрессивное улучшение анкеты.
- *
- * При включённом JS: перехватываем submit, валидируем теми же правилами, что и
- * сервер (modules/application.php), и шлём данные через fetch (JSON) без
- * перезагрузки. Серверные ошибки (422) показываем у полей. Без JS этот файл
- * не выполняется — форма уходит обычным POST.
- */
 (function () {
   'use strict';
 
@@ -16,49 +8,21 @@
     var el = form.elements[name];
     return el ? el.value : '';
   }
-  function gender() {
-    var el = form.querySelector('input[name="gender"]:checked');
-    return el ? el.value : '';
-  }
-  function languages() {
-    var checked = form.querySelectorAll('input[name="languages[]"]:checked');
-    return Array.prototype.slice.call(checked).map(function (c) { return parseInt(c.value, 10); });
-  }
-  function contract() {
-    var el = form.querySelector('input[name="contract"]');
-    return !!(el && el.checked);
-  }
 
-  // Правила = зеркало серверных (как в прошлом задании).
   function fieldError(name) {
     switch (name) {
-      case 'fio':
-        if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/u.test(val('fio'))) return 'Заполните ФИО (только буквы)';
-        return '';
-      case 'phone':
-        if (!/^[0-9+\-\s()]+$/.test(val('phone'))) return 'Неверный телефон';
+      case 'name':
+        if (!val('name').trim()) return 'Заполните имя';
         return '';
       case 'email':
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) return 'Неверный email';
         return '';
-      case 'birth_date':
-        var v = val('birth_date');
-        var year = v ? parseInt(v.slice(0, 4), 10) : 0;
-        var now = new Date();
-        if (!v || v > now.toISOString().slice(0, 10) || year < 1900 || year > now.getFullYear())
-          return 'Укажите реальную дату рождения';
+      case 'phone':
+        var p = val('phone').trim();
+        if (p && !/^[0-9+\-\s()]+$/.test(p)) return 'Неверный телефон';
         return '';
-      case 'gender':
-        if (!gender()) return 'Выберите пол';
-        return '';
-      case 'languages':
-        if (languages().length === 0) return 'Выберите языки';
-        return '';
-      case 'biography':
-        if (!val('biography').trim()) return 'Заполните биографию';
-        return '';
-      case 'contract':
-        if (!contract()) return 'Нужно согласие';
+      case 'message':
+        if (!val('message').trim()) return 'Введите сообщение';
         return '';
       default:
         return '';
@@ -66,7 +30,6 @@
   }
 
   function errSpan(name) {
-    if (name === 'languages') return document.getElementById('err-languages');
     var ctrl = form.querySelector('[name="' + name + '"]');
     if (!ctrl) return null;
     var group = ctrl.closest('.form__group');
@@ -75,7 +38,7 @@
 
   function setError(name, msg) {
     var ctrl = form.querySelector('[name="' + name + '"]');
-    if (ctrl && ctrl.classList && ctrl.type !== 'radio' && ctrl.type !== 'checkbox') {
+    if (ctrl && ctrl.classList) {
       if (msg) ctrl.classList.add('form__input--error'); else ctrl.classList.remove('form__input--error');
     }
     var span = errSpan(name);
@@ -85,7 +48,7 @@
     }
   }
 
-  var fields = ['fio', 'phone', 'email', 'birth_date', 'gender', 'languages', 'biography', 'contract'];
+  var fields = ['name', 'email', 'phone', 'message'];
 
   function validate() {
     var ok = true;
@@ -97,16 +60,21 @@
     return ok;
   }
 
-  ['fio', 'phone', 'email', 'birth_date', 'biography'].forEach(function (f) {
+  fields.forEach(function (f) {
     var el = form.elements[f];
     if (el) el.addEventListener('blur', function () { setError(f, fieldError(f)); });
   });
 
   var box = document.getElementById('formMessage');
-  function message(type, text) {
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function message(type, html) {
     if (!box) return;
     box.className = 'form__message form__message--' + type;
-    box.textContent = text;
+    box.innerHTML = html;
     box.hidden = false;
   }
 
@@ -114,19 +82,16 @@
     e.preventDefault();
 
     if (!validate()) {
-      message('error', 'Пожалуйста, исправьте ошибки в форме');
+      message('error', esc('Пожалуйста, исправьте ошибки в форме'));
       return;
     }
 
     var data = {
-      fio: val('fio'),
-      phone: val('phone'),
+      name: val('name'),
       email: val('email'),
-      birth_date: val('birth_date'),
-      gender: gender(),
-      biography: val('biography'),
-      languages: languages(),
-      contract: contract()
+      phone: val('phone'),
+      company: val('company'),
+      message: val('message')
     };
 
     var method = form.dataset.mode === 'edit' ? 'PUT' : 'POST';
@@ -141,29 +106,29 @@
       .then(function (r) { return r.json().then(function (b) { return { status: r.status, body: b }; }); })
       .then(function (res) {
         if (button) button.disabled = false;
-
         if (res.status === 422 && res.body.errors) {
           Object.keys(res.body.errors).forEach(function (f) { setError(f, res.body.errors[f]); });
-          message('error', 'Пожалуйста, исправьте ошибки в форме');
+          message('error', esc('Пожалуйста, исправьте ошибки в форме'));
           return;
         }
         if (res.status === 201) {
           message('success',
-            'Заявка принята. Логин: ' + res.body.login +
-            ', пароль: ' + res.body.password +
-            '. Профиль: ' + res.body.profile);
+            'Заявка принята. Логин: <strong>' + esc(res.body.login) +
+            '</strong>, пароль: <strong>' + esc(res.body.password) +
+            '</strong>. Профиль: <a href="' + esc(res.body.profile) +
+            '">' + esc(res.body.profile) + '</a>');
           form.reset();
           return;
         }
         if (res.status === 200) {
-          message('success', 'Данные сохранены.');
+          message('success', esc('Данные сохранены.'));
           return;
         }
-        message('error', 'Произошла ошибка. Попробуйте позже.');
+        message('error', esc('Произошла ошибка. Попробуйте позже.'));
       })
       .catch(function () {
         if (button) button.disabled = false;
-        message('error', 'Ошибка сети. Попробуйте позже.');
+        message('error', esc('Ошибка сети. Попробуйте позже.'));
       });
   });
 })();

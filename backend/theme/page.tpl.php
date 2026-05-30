@@ -1,8 +1,4 @@
-<?php
-/**
- * theme/page.tpl.php — обёртка страницы. Сюда складывается вывод модулей ($c['#content']).
- */
-?><!doctype html>
+<?php ?><!doctype html>
 <html lang="ru">
 <head>
   <meta charset="<?= conf('charset') ?>">
@@ -19,7 +15,6 @@
     }
   }
   ?>
-  <!-- Прогрессивное улучшение: навигация и перехват отправки формы через fetch. -->
   <script src="<?= asset('site.js') ?>" defer></script>
   <script src="<?= asset('form.js') ?>" defer></script>
 </body>
