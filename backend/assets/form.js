@@ -4,6 +4,8 @@
   var form = document.getElementById('appForm');
   if (!form) return;
 
+  var isEdit = form.dataset.mode === 'edit';
+
   function val(name) {
     var el = form.elements[name];
     return el ? el.value : '';
@@ -27,12 +29,16 @@
       case 'message':
         if (!val('message').trim()) return 'Введите сообщение';
         return '';
+      case 'edit_password':
+        if (isEdit && !val('edit_password')) return 'Введите пароль для сохранения';
+        return '';
       default:
         return '';
     }
   }
 
   function errSpan(name) {
+    if (name === 'edit_password') return document.getElementById('err-edit-password');
     var ctrl = form.querySelector('[name="' + name + '"]');
     if (!ctrl) return null;
     var group = ctrl.closest('.form__group');
@@ -52,6 +58,7 @@
   }
 
   var fields = ['name', 'email', 'phone', 'message'];
+  if (isEdit) fields.push('edit_password');
 
   function validate() {
     var ok = true;
@@ -63,7 +70,7 @@
     return ok;
   }
 
-  fields.forEach(function (f) {
+  ['name', 'email', 'phone', 'message', 'edit_password'].forEach(function (f) {
     var el = form.elements[f];
     if (el) el.addEventListener('blur', function () { setError(f, fieldError(f)); });
   });
@@ -89,6 +96,21 @@
       return;
     }
 
+    var method = isEdit ? 'PUT' : 'POST';
+    var headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+
+    if (isEdit) {
+      var loginEl = document.getElementById('editLogin');
+      var passEl = form.elements['edit_password'];
+      if (loginEl && passEl && loginEl.value && passEl.value) {
+        try {
+          headers['Authorization'] = 'Basic ' + btoa(unescape(encodeURIComponent(
+            loginEl.value + ':' + passEl.value
+          )));
+        } catch (ex) {}
+      }
+    }
+
     var data = {
       name: val('name'),
       email: val('email'),
@@ -97,24 +119,40 @@
       message: val('message')
     };
 
-    var method = form.dataset.mode === 'edit' ? 'PUT' : 'POST';
     var button = form.querySelector('button[type="submit"]');
     if (button) button.disabled = true;
 
     fetch(form.action, {
       method: method,
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: headers,
       body: JSON.stringify(data)
     })
-      .then(function (r) { return r.json().then(function (b) { return { status: r.status, body: b }; }); })
+      .then(function (r) {
+        var status = r.status;
+        return r.text().then(function (text) {
+          var body = null;
+          try { body = JSON.parse(text); } catch (ex) {}
+          return { status: status, body: body };
+        });
+      })
       .then(function (res) {
         if (button) button.disabled = false;
-        if (res.status === 422 && res.body.errors) {
+
+        if (res.status === 401) {
+          setError('edit_password', 'Неверный пароль');
+          message('error', esc('Неверный логин или пароль'));
+          return;
+        }
+        if (res.status === 403) {
+          message('error', esc('Нет доступа к этому профилю'));
+          return;
+        }
+        if (res.status === 422 && res.body && res.body.errors) {
           Object.keys(res.body.errors).forEach(function (f) { setError(f, res.body.errors[f]); });
           message('error', esc('Пожалуйста, исправьте ошибки в форме'));
           return;
         }
-        if (res.status === 201) {
+        if (res.status === 201 && res.body) {
           message('success',
             'Заявка принята. Логин: <strong>' + esc(res.body.login) +
             '</strong>, пароль: <strong>' + esc(res.body.password) +
@@ -127,11 +165,11 @@
           message('success', esc('Данные сохранены.'));
           return;
         }
-        message('error', esc('Произошла ошибка. Попробуйте позже.'));
+        message('error', esc('Ошибка сервера (' + res.status + '). Попробуйте позже.'));
       })
       .catch(function () {
         if (button) button.disabled = false;
-        message('error', esc('Ошибка сети. Попробуйте позже.'));
+        message('error', esc('Ошибка соединения. Проверьте подключение к сети.'));
       });
   });
 })();

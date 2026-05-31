@@ -19,6 +19,9 @@ $cls  = function ($k) use ($e) { return isset($e[$k]) ? ' form__input--error' : 
           data-mode="<?= $edit ? 'edit' : 'create' ?>" novalidate>
 
       <?php if ($edit): ?><input type="hidden" name="_method" value="put"><?php endif; ?>
+      <?php if ($edit && !empty($c['app'])): ?>
+        <input type="hidden" id="editLogin" value="<?= htmlspecialchars($c['app']['login']) ?>">
+      <?php endif; ?>
 
       <div class="form__row">
         <div class="form__group">
@@ -56,6 +59,15 @@ $cls  = function ($k) use ($e) { return isset($e[$k]) ? ' form__input--error' : 
                   rows="6" placeholder="Расскажите о вашем проекте..."><?= $val('message') ?></textarea>
         <span class="form__error"<?= $err('message') ? '' : ' hidden' ?>><?= htmlspecialchars($err('message')) ?></span>
       </div>
+
+      <?php if ($edit): ?>
+      <div class="form__group">
+        <label for="edit_password" class="form__label">Пароль *</label>
+        <input type="password" id="edit_password" name="edit_password" class="form__input"
+               placeholder="Введите пароль из сообщения об успешной отправке">
+        <span class="form__error" id="err-edit-password" hidden></span>
+      </div>
+      <?php endif; ?>
 
       <button type="submit" class="btn btn--primary btn--submit">
         <span class="btn__text"><?= $edit ? 'Сохранить' : 'Отправить' ?></span>
