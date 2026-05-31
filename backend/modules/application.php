@@ -9,16 +9,22 @@ function contact_validate($data) {
 
   if ($name === '') {
     $errors['name'] = 'Заполните имя';
+  } elseif (!preg_match('/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/u', $name)) {
+    $errors['name'] = 'Имя должно содержать только буквы';
   }
+
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors['email'] = 'Неверный email';
   }
+
   if ($phone !== '' && !preg_match('/^[0-9+\-\s()]+$/', $phone)) {
     $errors['phone'] = 'Неверный телефон';
   }
+
   if ($message === '') {
     $errors['message'] = 'Введите сообщение';
   }
+
   return $errors;
 }
 

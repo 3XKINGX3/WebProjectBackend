@@ -10,9 +10,12 @@
   }
 
   function fieldError(name) {
+    var v;
     switch (name) {
       case 'name':
-        if (!val('name').trim()) return 'Заполните имя';
+        v = val('name').trim();
+        if (!v) return 'Заполните имя';
+        if (!/^[a-zA-Zа-яА-ЯёЁ\s\-]+$/u.test(v)) return 'Имя должно содержать только буквы';
         return '';
       case 'email':
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('email'))) return 'Неверный email';
